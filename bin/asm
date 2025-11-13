@@ -1,0 +1,9 @@
+#!/bin/bash
+echo filename?
+read asm_filename
+echo Compiling.
+nasm -f elf64 $asm_filename.asm -o $asm_filename.o
+echo Linking.
+ld $asm_filename.o -o $asm_filename
+echo Running Compiled and Linked Program, $asm_filename:
+./$asm_filename

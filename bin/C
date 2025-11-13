@@ -1,0 +1,12 @@
+#!/bin/bash
+# Echos double as comments in this script.
+echo 'filename?'
+read CName
+echo compiling...
+gcc $CName.c -o $CName
+echo Permissing...
+chmod +x $CName
+echo starting...
+./$CName
+
+

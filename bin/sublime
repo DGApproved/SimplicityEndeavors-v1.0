@@ -1,0 +1,5 @@
+#!/bin/bash
+echo filename?
+read Sublime_filename
+/opt/sublime_text/sublime_text $Sublime_filename
+
