@@ -1,2 +1,3 @@
-# https://github.com/DGApproved/SimplicityEndeavors-v1.0.git/README.md
+# Simplicity Endeavors v.1.0
+#----------------------------
 echo "# SimplicityEndeavors-v1.0" >> README.md
