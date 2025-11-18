@@ -1,0 +1,69 @@
+!#/bin/bash
+##################################################################################################################################
+# Sources and references Used to build this script(specifically website pages):                                                  # Except
+#                                                                                                                                #
+# https://www.cyberciti.biz/tips/compiling-linux-kernel-26.html                                                                  # Comment 
+# https://www.kernel.org/pub/linux/kernel/v6.x/                                                                                  #
+# https://www.kernel.org/doc/html/v5.14/process/applying-patches.html                                                            # Box's
+#                                                                                                                                #
+# Further Reference Material: # https://gist.github.com/Avyd/8191406 #  Note: Yes, I Manually Typed the whole script not cpy/pst # Websites.
+##################################################################################################################################
+echo Script for automating Kernel Making utilities, intention for personal use only.
+echo entering su mode requires password, for making /Dev/Kernel directories... etc. 
+su
+mkdir /Dev
+mkdir /Dev/Kernel
+cd /Dev/Kernel
+echo type the kernel version desired ex: 6.7.9 
+echo then press enter to continue...
+read VeRSioN
+echo downloading: https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSioN.tar.xz
+wget https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSioN.tar.xz
+echo downloading: https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSion.tar.sign
+wget https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSion.tar.sign
+echo Checking Signature:
+gpg --verify linux-$VeRSioN.tar.sign
+echo paste the signature below: and then press enter to continue.
+read SiGNaTuRe
+echo Uncompressing...
+unxz -v linux-$VeRSioN.tar.xz
+echo Recieving keys for verification?...
+gpg --recv-keys $SiGNaTuRe
+echo Re-Verifying 
+gpg --verify linux-$VeRSioN.tar.sign
+echo NOTE: If you get "BAD SIGNAURE" or equivalent, Press cntrl+c or whatevs close the window, there is an error.
+echo unarchiving...
+tar xvf linux-$VeRSioN.tar
+cd linux-$VeRSioN 
+echo Enter full path to kernel .config file, for example /boot/config-$(uname -r)
+echo Press enter to continue...
+read SRCCoNFiG
+rsync -axHAX $SRCCoNFiG .config
+echo save config after any desired changes are made.
+make menuconfig
+echo installing linux-source for certificates
+apt install linux-source -y
+echo enter path to linux source certificates: ex. /usr/src/linux-source-$VeRSioN/debian/*
+read CeRTiFiCaTeS
+rsync -axHAX $CeRTiFiCaTeS debian
+echo print number of cpu cores to utilize for compiling, and press enter...
+read CPN
+echo cleaning build environment:
+make clean
+echo 'Beginning main build Process...(stage 1)'
+make -j $CPN
+echo 'was there an error, if so stop script to debug, else, continue...(stage 2)'
+make modules
+echo Utilizing INSTALL_MOD_STRIP=1 flag because better alternate process not located.
+make INSTALL_MOD_STRIP=1 modules_install
+echo installing kernel...
+make install
+
+
+########################################################################################
+# to build into a deb for use on multiple systems or later reuse:                      #
+# make -kpkg clean                                                                     #
+# fakeroot make-mpkg --initrd --append-to-version=-custom kernel_image kernel_headers  #
+# make modules                                                                         #
+# make modules_install                                                                 #
+########################################################################################
