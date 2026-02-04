@@ -11,19 +11,30 @@
 echo Script for automating Kernel Making utilities, intention for personal use only.
 echo entering su mode requires password, for making /Dev/Kernel directories... etc. 
 su
-mkdir /Dev
-mkdir /Dev/Kernel
+mkdir Dev
+mkdir Dev/Kernel
 cd /Dev/Kernel
 echo type the kernel version desired ex: 6.7.9 
 echo then press enter to continue...
 read VeRSioN
 echo downloading: https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSioN.tar.xz
 wget https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSioN.tar.xz
+echo type the kernel sign version desired ex: 6.7.9 
+echo then press enter to continue...
+read VeRSion
 echo downloading: https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSion.tar.sign
 wget https://www.kernel.org/pub/linux/kernel/v6.x/linux-$VeRSion.tar.sign
 echo Checking Signature:
 gpg --verify linux-$VeRSioN.tar.sign
 echo paste the signature below: and then press enter to continue.
+read SiGNaTuRe
+echo Uncompressing...
+unxz -v linux-$VeRSioN.tar.xz
+echo Recieving keys for verification?...
+gpg --recv-keys $SiGNaTuRe
+echo Re-Verifying 
+gpg --verify linux-$VeRSioN.tar.sign
+echo paste the signature below: and then press enter to continue.[option to verify again]
 read SiGNaTuRe
 echo Uncompressing...
 unxz -v linux-$VeRSioN.tar.xz
@@ -46,6 +57,10 @@ apt install linux-source -y
 echo enter path to linux source certificates: ex. /usr/src/linux-source-$VeRSioN/debian/*
 read CeRTiFiCaTeS
 rsync -axHAX $CeRTiFiCaTeS debian
+ls debian
+echo ----------------------------------------------------------------
+echo 'for mv debian/debian debia, & rm debian, & mv debia debain, etc'
+su
 echo print number of cpu cores to utilize for compiling, and press enter...
 read CPN
 echo cleaning build environment:
